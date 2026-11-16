@@ -1,0 +1,66 @@
+name: Daily valuation refresh and publish
+
+on:
+  schedule:
+    - cron: '0 0 * * *'
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/**'
+      - 'scripts/**'
+      - 'app/**'
+      - 'lib/**'
+      - 'data/**'
+      - 'package*.json'
+      - 'index.html'
+
+concurrency:
+  group: valuation-refresh
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install build and public-data readers
+        run: |
+          npm ci --ignore-scripts
+          python -m pip install 'xlrd==2.0.2' 'pypdf>=6,<7'
+      - name: Collect data and build the panel
+        env:
+          TZ: Asia/Shanghai
+          PYTHONDONTWRITEBYTECODE: '1'
+        run: python scripts/refresh-cloud.py
+      - name: Save dated snapshots
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add index.html offline/snapshot.json offline/global-snapshot.json
+          if ! git diff --cached --quiet; then
+            git commit -m "Refresh valuation snapshots"
+            git push origin HEAD:main
+          fi
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v4
+        with:
+          path: dist
+      - uses: actions/deploy-pages@v4
+        id: deployment

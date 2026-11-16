@@ -1,0 +1,6 @@
+[
+  {"index":"AU9999","fund":null,"name":"黄金现货 Au99.99","group":"黄金与海外","note":"上海黄金交易所现货实盘黄金，报价单位为人民币元/克，观察价格与回撤","officialName":"上海黄金交易所 Au99.99","kind":"gold","unit":"元/克"},
+  {"index":"HSTECH","fund":null,"name":"恒生科技","group":"黄金与海外","note":"港股科技指数，2020年7月推出；历史估值窗口优先检查5年","officialName":"Hang Seng TECH Index","kind":"global","unit":"点"},
+  {"index":"NDX","fund":null,"name":"纳斯达克100","group":"黄金与海外","note":"纳斯达克100指数，覆盖大型非金融公司，价格以美元计价","officialName":"Nasdaq-100 Index","kind":"global","unit":"点"},
+  {"index":"SP500","fund":null,"name":"标普500","group":"黄金与海外","note":"美国大盘股指数，价格以美元计价","officialName":"S&P 500 Index","kind":"global","unit":"点"}
+]
